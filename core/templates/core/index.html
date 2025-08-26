@@ -1,0 +1,297 @@
+{% extends "core/base.html" %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section text-center">
+    <div class="container">
+        <h1 class="display-4 fw-bold mb-4">Report. Resolve. Rejoice.</h1>
+        <p class="lead mb-5">Your voice matters in making our community better. Report local issues and track their
+            resolution in real-time.</p>
+        <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+            {% if user.is_authenticated %}
+            <a href="{% url 'citizen_dashboard' %}" class="btn btn-primary btn-lg px-4 gap-3">Report an Issue</a>
+            {% else %}
+            <a href="{% url 'login' %}" class="btn btn-primary btn-lg px-4 gap-3">Report an Issue</a>
+            {% endif %}
+            <a href="#how-it-works" class="btn btn-outline-light btn-lg px-4">Learn More</a>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="container mb-5">
+    <div class="row text-center">
+        <div class="col-md-3">
+            <h3 class="fw-bold text-primary">{{ total_issues|default:"0" }}+</h3>
+            <p class="text-muted">Issues Reported</p>
+        </div>
+        <div class="col-md-3">
+            <h3 class="fw-bold text-primary">{{ resolved_issues|default:"0" }}+</h3>
+            <p class="text-muted">Issues Resolved</p>
+        </div>
+        <div class="col-md-3">
+            <h3 class="fw-bold text-primary">{{ active_users|default:"0" }}+</h3>
+            <p class="text-muted">Active Users</p>
+        </div>
+        <div class="col-md-3">
+            <h3 class="fw-bold text-primary">{{ total_departments|default:"0" }}</h3>
+            <p class="text-muted">Municipal Departments</p>
+        </div>
+    </div>
+</section>
+
+
+<!-- Features Section -->
+<section id="features" class="container mb-5">
+    <div class="text-center mb-5">
+        <h2 class="fw-bold">Why Choose Civixfix?</h2>
+        <p class="lead text-muted">Transparent, efficient, and community-driven problem solving</p>
+    </div>
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center p-4">
+                    <div class="feature-icon">
+                        <i class="fas fa-map-marked-alt"></i>
+                    </div>
+                    <h5 class="card-title">Location-Based Reporting</h5>
+                    <p class="card-text text-muted">Pinpoint issues on an interactive map for accurate location tracking
+                        and faster resolution.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center p-4">
+                    <div class="feature-icon">
+                        <i class="fas fa-tasks"></i>
+                    </div>
+                    <h5 class="card-title">Real-Time Tracking</h5>
+                    <p class="card-text text-muted">Follow your reported issues through every stage from reporting to
+                        resolution.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center p-4">
+                    <div class="feature-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h5 class="card-title">Community Engagement</h5>
+                    <p class="card-text text-muted">Vote and comment on issues to help prioritize what matters most to
+                        your neighborhood.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section id="how-it-works" class="bg-light py-5 mb-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">How Civixfix Works</h2>
+            <p class="lead text-muted">Simple steps to make your community better</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <span class="badge bg-primary rounded-circle mb-3"
+                            style="width: 50px; height: 50px; line-height: 50px; font-size: 1.5rem;">1</span>
+                        <h5 class="card-title">Report an Issue</h5>
+                        <p class="card-text text-muted">Take a photo, add details, and drop a pin on the map to report
+                            problems in your area.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <span class="badge bg-primary rounded-circle mb-3"
+                            style="width: 50px; height: 50px; line-height: 50px; font-size: 1.5rem;">2</span>
+                        <h5 class="card-title">Community Support</h5>
+                        <p class="card-text text-muted">Others can vote and comment to show support and add details to
+                            your report.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <span class="badge bg-primary rounded-circle mb-3"
+                            style="width: 50px; height: 50px; line-height: 50px; font-size: 1.5rem;">3</span>
+                        <h5 class="card-title">Official Response</h5>
+                        <p class="card-text text-muted">Municipal authorities receive, prioritize, and work on resolving
+                            the issues.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Recent Issues Section -->
+<section class="container mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold">Recently Reported Issues</h2>
+        {% if user.is_authenticated %}
+        <a href="{% url 'view_all_issues' %}" class="btn btn-primary">View All Issues</a>
+        {% else %}
+        <a href="{% url 'login' %}" class="btn btn-outline-primary">View All Issues</a>
+        {% endif %}
+    </div>
+    <div class="row g-4">
+        {% for issue in recent_issues %}
+        <div class="col-md-4">
+            <div class="card issue-card h-100">
+                {% if issue.photo %}
+                <img src="{{ issue.photo.url }}" class="card-img-top" alt="{{ issue.title }}"
+                    style="height: 200px; object-fit: cover;">
+                {% else %}
+                <img src="https://via.placeholder.com/300x200/6c757d/ffffff?text=No+Image" class="card-img-top"
+                    alt="No image">
+                {% endif %}
+                <div class="card-body">
+                    <span class="badge 
+                            {% if issue.department.name == 'Roads & Transportation' %} bg-primary
+                            {% elif issue.department.name == 'Sanitation & Waste Management' %} bg-success
+                            {% elif issue.department.name == 'Public Safety' %} bg-danger
+                            {% elif issue.department.name == 'Water & Sewage' %} bg-info text-dark
+                            {% elif issue.department.name == 'Parks & Recreation' %} bg-warning text-dark
+                            {% elif issue.department.name == 'Electricity & Utilities' %} bg-dark
+                            {% elif issue.department.name == 'Environmental Services' %} bg-secondary
+                            {% elif issue.department.name == 'Public Works' %} bg-teal text-white
+                            {% else %} bg-light text-dark
+                            {% endif %} mb-2">
+                        {{ issue.department.name|default:"General" }}
+                    </span>
+                    <h5 class="card-title">{{ issue.title|truncatewords:5 }}</h5>
+                    <p class="card-text text-muted">{{ issue.description|truncatewords:15 }}</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted"><i class="fas fa-map-marker-alt me-1"></i> {{ issue.location|truncatewords:2 }}</small>
+
+                        <!-- Vote Button -->
+                        <div class="vote-section">
+                            {% if user.is_authenticated %}
+                            <button
+                                class="btn btn-sm btn-outline-primary vote-btn {% if issue.user_has_voted %}active{% endif %}"
+                                data-issue-id="{{ issue.id }}">
+                                <i class="fas fa-thumbs-up"></i>
+                                <span class="vote-count">{{ issue.vote_count }}</span>
+                            </button>
+                            {% else %}
+                            <a href="{% url 'login' %}" class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-thumbs-up"></i>
+                                <span class="vote-count">{{ issue.vote_count }}</span>
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent">
+                    <small
+                        class="text-{% if issue.status == 'resolved' %}success{% elif issue.status == 'in_progress' %}warning{% else %}info{% endif %}">
+                        <i
+                            class="fas fa-{% if issue.status == 'resolved' %}check-circle{% elif issue.status == 'in_progress' %}tasks{% else %}clock{% endif %} me-1"></i>
+                        {{ issue.get_status_display }}
+                    </small>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+            <h4>No issues reported yet</h4>
+            <p class="text-muted">Be the first to report an issue in your community!</p>
+            <a href="{% url 'login' %}" class="btn btn-primary">Get Started</a>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="bg-primary text-white py-5">
+    <div class="container text-center">
+        <h2 class="fw-bold mb-4">Ready to make a difference in your community?</h2>
+        <p class="lead mb-4">Join {{ active_users|default:"thousands of" }} citizens who are actively improving their
+            neighborhoods.</p>
+        {% if user.is_authenticated %}
+        <a href="{% url 'citizen_dashboard' %}" class="btn btn-light btn-lg px-4">Report an Issue</a>
+        {% else %}
+        <a href="{% url 'login' %}" class="btn btn-light btn-lg px-4">Get Started Now</a>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function () {
+        // Vote functionality
+        $('.vote-btn').click(function () {
+            const issueId = $(this).data('issue-id');
+            const button = $(this);
+
+            // Show loading state
+            const originalHtml = button.html();
+            button.prop('disabled', true);
+            button.html('<i class="fas fa-spinner fa-spin"></i>');
+
+            // Send vote request
+            $.ajax({
+                url: "{% url 'vote_issue' 0 %}".replace('0', issueId),
+                type: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                success: function (response) {
+                    if (response.success) {
+                        // Update button state
+                        if (response.voted) {
+                            button.addClass('active');
+                        } else {
+                            button.removeClass('active');
+                        }
+
+                        // Update vote count
+                        button.find('.vote-count').text(response.vote_count);
+
+                        // Update button text
+                        button.html('<i class="fas fa-thumbs-up"></i> <span class="vote-count">' + response.vote_count + '</span>');
+                    } else {
+                        alert('Error: ' + response.error);
+                        button.html(originalHtml);
+                    }
+                },
+                error: function () {
+                    alert('Error voting. Please try again.');
+                    button.html(originalHtml);
+                },
+                complete: function () {
+                    button.prop('disabled', false);
+                }
+            });
+        });
+    });
+</script>
+
+<style>
+    .vote-btn.active {
+        background-color: #0d6efd;
+        color: white;
+        border-color: #0d6efd;
+    }
+
+    .vote-btn:hover:not(:disabled) {
+        transform: scale(1.05);
+        transition: transform 0.2s;
+    }
+
+    .vote-btn:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+    }
+</style>
+{% endblock %}
