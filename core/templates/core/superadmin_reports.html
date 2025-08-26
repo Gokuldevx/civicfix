@@ -1,0 +1,91 @@
+{% extends "core/base.html" %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="card shadow-lg">
+        <div class="card-header bg-warning text-dark">
+            <h3>Analytics & Reports</h3>
+        </div>
+        <div class="card-body">
+
+            <h5>Total Issues Reported: 
+                <span class="badge bg-dark">{{ total_issues }}</span>
+            </h5>
+
+            <canvas id="statusChart" height="120" class="mt-4"></canvas>
+            <canvas id="deptChart" height="120" class="mt-4"></canvas>
+            <canvas id="citizenChart" height="120" class="mt-4"></canvas>
+            <canvas id="trendChart" height="120" class="mt-4"></canvas>
+
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+{# Safely pass JSON to JS #}
+{{ status_counts|json_script:"status-data" }}
+{{ top_departments|json_script:"dept-data" }}
+{{ top_citizens|json_script:"citizen-data" }}
+{{ issues_last_30_days|json_script:"trend-data" }}
+
+<script>
+    const statusCounts = JSON.parse(document.getElementById("status-data").textContent);
+    const deptCounts = JSON.parse(document.getElementById("dept-data").textContent);
+    const citizenCounts = JSON.parse(document.getElementById("citizen-data").textContent);
+    const trendCounts = JSON.parse(document.getElementById("trend-data").textContent);
+
+    // Status chart
+    new Chart(document.getElementById('statusChart'), {
+        type: 'pie',
+        data: {
+            labels: statusCounts.map(item => item.status),
+            datasets: [{
+                data: statusCounts.map(item => item.count),
+                backgroundColor: ['#dc3545', '#0dcaf0', '#ffc107', '#198754']
+            }]
+        }
+    });
+
+    // Department chart
+    new Chart(document.getElementById('deptChart'), {
+        type: 'bar',
+        data: {
+            labels: deptCounts.map(item => item.department__name),
+            datasets: [{
+                label: 'Issues by Department',
+                data: deptCounts.map(item => item.count),
+                backgroundColor: '#0d6efd'
+            }]
+        }
+    });
+
+    // Citizens chart
+    new Chart(document.getElementById('citizenChart'), {
+        type: 'bar',
+        data: {
+            labels: citizenCounts.map(item => item.reporter__username),
+            datasets: [{
+                label: 'Top Citizens',
+                data: citizenCounts.map(item => item.count),
+                backgroundColor: '#6610f2'
+            }]
+        }
+    });
+
+    // Issues over time
+    new Chart(document.getElementById('trendChart'), {
+        type: 'line',
+        data: {
+            labels: trendCounts.map(item => item.day),
+            datasets: [{
+                label: 'Issues Last 30 Days',
+                data: trendCounts.map(item => item.count),
+                borderColor: '#fd7e14',
+                fill: false,
+                tension: 0.2
+            }]
+        }
+    });
+</script>
+{% endblock %}
