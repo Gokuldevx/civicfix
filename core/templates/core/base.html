@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>
+    Civixfix - {% block title %}Community Issue Reporting Platform{% endblock %}
+  </title>
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="preload" as="image" href="https://a.tile.openstreetmap.org/13/4521/2632.png">
+  <link rel="preload" as="image" href="https://b.tile.openstreetmap.org/13/4521/2632.png">
+
+  <link rel="preload" as="font"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/fa-solid-900.woff2" type="font/woff2"
+    crossorigin>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <!-- Custom CSS -->
+  <style>
+    .hero-section {
+      background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+        url("https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?ixlib=rb-4.0.3");
+      background-size: cover;
+      background-position: center;
+      color: white;
+      padding: 100px 0;
+      margin-bottom: 30px;
+    }
+
+    .feature-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      color: #0d6efd;
+    }
+
+    .issue-card {
+      transition: transform 0.3s;
+    }
+
+    .issue-card:hover {
+      transform: translateY(-5px);
+    }
+  </style>
+  {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+    <div class="container">
+      <a class="navbar-brand" href="{% url 'home' %}">
+        <i class="fas fa-bullhorn me-2"></i>Civixfix
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item">
+            <a class="nav-link active" href="{% url 'home' %}">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#features">Features</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#how-it-works">How It Works</a>
+          </li>
+          {% if user.is_authenticated and user.is_citizen %}
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'citizen_dashboard' %}">Dashboard</a>
+          </li>
+          {% endif %}
+        </ul>
+
+        <div class="d-flex">
+          {% if user.is_authenticated %}
+          <div class="dropdown">
+            <button class="btn btn-outline-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
+              <i class="fas fa-user me-1"></i> {{ user.username }}
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+              {% if user.is_citizen %}
+              <li>
+                <a class="dropdown-item" href="{% url 'citizen_dashboard' %}">
+                  <i class="fas fa-users me-2 text-primary"></i>Citizen Dashboard</a>
+              </li>
+              {% endif %}
+
+              {% if user.is_resolver %}
+              <li>
+                <a class="dropdown-item" href="{% url 'department_dashboard' %}">
+                  <i class="fas fa-building me-2 text-success"></i>Department Dashboard</a>
+              </li>
+              {% endif %}
+
+              {% if user.is_superuser %}
+              <li>
+                <a class="dropdown-item text-danger fw-bold" href="{% url 'superadmin_dashboard' %}">
+                  <i class="fas fa-crown me-1 text-warning fw-bold"></i> Super Admin
+                </a>
+              </li>
+              {% endif %}
+
+              <li>
+                <hr class="dropdown-divider" />
+              </li>
+              <li>
+                <form method="post" action="{% url 'logout' %}">
+                  {% csrf_token %}
+                  <button type="submit" class="dropdown-item"><i class="fas fa-right-from-bracket me-2"></i>Logout</button>
+                </form>
+              </li>
+            </ul>
+          </div>
+          {% else %}
+          <!-- Login / Register buttons for anonymous users -->
+          <a href="{% url 'login' %}" class="btn btn-outline-light me-2">Login</a>
+          <a href="{% url 'register' %}" class="btn btn-primary">Register</a>
+          {% endif %}
+        </div>
+
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main>{% block content %}{% endblock %}</main>
+
+  <!-- Footer -->
+  <footer class="text-black py-4 mt-5">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-4 mb-3">
+          <h5><i class="fas fa-bullhorn me-2"></i>Civixfix</h5>
+          <p class="text-muted">
+            Empowering communities through transparent issue reporting and
+            resolution.
+          </p>
+        </div>
+        <div class="col-md-4 mb-3">
+          <h5>Quick Links</h5>
+          <ul class="list-unstyled">
+            <li>
+              <a href="#features" class="text-decoration-none text-muted">Features</a>
+            </li>
+            <li>
+              <a href="#how-it-works" class="text-decoration-none text-muted">How It Works</a>
+            </li>
+            <li>
+              <a href="#" class="text-decoration-none text-muted">Privacy Policy</a>
+            </li>
+          </ul>
+        </div>
+        <div class="col-md-4 mb-3">
+          <h5>Contact</h5>
+          <ul class="list-unstyled text-muted">
+            <li>
+              <i class="fas fa-envelope me-2"></i> gokuldevse2001@gmail.com
+            </li>
+            <li><i class="fas fa-phone me-2"></i> +91 8129329073</li>
+          </ul>
+        </div>
+      </div>
+      <hr class="my-4 bg-secondary" />
+      <div class="text-center text-muted">
+        <small>&copy; {% now "Y" %} Civixfix. All rights reserved.</small>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Bootstrap 5 JS Bundle with Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+
+  </html>
