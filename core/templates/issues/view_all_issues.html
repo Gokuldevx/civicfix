@@ -1,0 +1,251 @@
+{% extends "core/base.html" %}
+{% load humanize %}
+{% block content %}
+<div class="container my-5">
+    <!-- Header + Filter -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+        <h2 class="fw-bold mb-0">All Reported Issues</h2>
+        <form method="get" class="d-flex flex-wrap gap-2">
+            <select name="status" class="form-select">
+                <option value="">All Status</option>
+                <option value="reported" {% if request.GET.status|default:'' == "reported" %}selected{% endif %}>Reported
+                </option>
+                <option value="acknowledged" {% if request.GET.status|default:'' == "acknowledged" %}selected{% endif %}>
+                    Acknowledged
+                </option>
+                <option value="in_progress" {% if request.GET.status|default:'' == "in_progress" %}selected{% endif %}>In
+                    Progress
+                </option>
+                <option value="resolved" {% if request.GET.status|default:'' == "resolved" %}selected{% endif %}>Resolved
+                </option>
+            </select>
+
+            <select name="department" class="form-select">
+                <option value="">All Departments</option>
+                {% for dept in departments %}
+                {% with dept.id|stringformat:"s" as dept_id %}
+                <option value="{{ dept_id }}" {% if request.GET.department|default:'' == dept_id %}selected{% endif %}>
+                    {{ dept.name }}
+                </option>
+                {% endwith %}
+                {% endfor %}
+            </select>
+
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-filter me-1"></i> Filter
+            </button>
+        </form>
+    </div>
+
+    <!-- Issue Cards -->
+    <div class="row g-4">
+        {% for issue in issues %}
+        <div class="col-md-4">
+            <div class="card issue-card h-100 shadow-sm border-0">
+                {% if issue.photo %}
+                <img src="{{ issue.photo.url }}" class="card-img-top issue-image" alt="{{ issue.title }}"
+                    style="height: 200px; object-fit: cover; cursor: pointer" data-bs-toggle="modal"
+                    data-bs-target="#imageModal" data-image="{{ issue.photo.url }}" />
+                {% else %}
+                <img src="https://via.placeholder.com/300x200/6c757d/ffffff?text=No+Image" class="card-img-top"
+                    alt="No image" />
+                {% endif %}
+
+                <div class="card-body d-flex flex-column">
+                    <!-- Department Badge -->
+                    <span class="badge 
+                        {% if issue.department.name == 'Roads & Transportation' %} bg-primary
+                        {% elif issue.department.name == 'Sanitation & Waste Management' %} bg-success
+                        {% elif issue.department.name == 'Public Safety' %} bg-danger
+                        {% elif issue.department.name == 'Water & Sewage' %} bg-info text-dark
+                        {% elif issue.department.name == 'Parks & Recreation' %} bg-warning text-dark
+                        {% elif issue.department.name == 'Electricity & Utilities' %} bg-dark
+                        {% elif issue.department.name == 'Environmental Services' %} bg-secondary
+                        {% elif issue.department.name == 'Public Works' %} bg-teal text-white
+                        {% else %} bg-light text-dark
+                        {% endif %} mb-2">
+                        {{ issue.department.name|default:"General" }}
+                    </span>
+
+
+                    <!-- Title + Description -->
+                    <h5 class="card-title">{{ issue.title|truncatewords:6 }}</h5>
+                    <p class="card-text text-muted flex-grow-1">
+                        {{ issue.description|truncatewords:18 }}
+                    </p>
+
+                    <!-- Location + Vote -->
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <small class="text-muted">
+                            <i class="fas fa-map-marker-alt me-1"></i> {{ issue.location|truncatewords:2 }}
+                        </small>
+                        <div class="vote-section">
+                            {% if user.is_authenticated %}
+                            <button
+                                class="btn btn-sm btn-outline-primary vote-btn {% if issue.user_has_voted %}active{% endif %}"
+                                data-issue-id="{{ issue.id }}">
+                                <i class="fas fa-thumbs-up"></i>
+                                <span class="vote-count">{{ issue.vote_count }}</span>
+                            </button>
+                            {% else %}
+                            <a href="{% url 'login' %}" class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-thumbs-up"></i>
+                                <span class="vote-count">{{ issue.vote_count }}</span>
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-footer bg-transparent d-flex justify-content-between align-items-center">
+                    <small
+                        class="text-{% if issue.status == 'resolved' %}success{% elif issue.status == 'in_progress' %}warning{% else %}info{% endif %}">
+                        <i
+                            class="fas fa-{% if issue.status == 'resolved' %}check-circle{% elif issue.status == 'in_progress' %}tasks{% else %}clock{% endif %} me-1"></i>
+                        {{ issue.get_status_display }}
+                    </small>
+
+                    <a href="{% url 'issue_detail' issue.id %}" class="btn btn-sm btn-outline-secondary">
+                        <i class="fas fa-comments"></i> Comments
+                    </a>
+                </div>
+
+
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+            <h4>No issues reported yet</h4>
+            <p class="text-muted">
+                Be the first to report an issue in your community!
+            </p>
+            <a href="{% url 'citizen_dashboard' %}" class="btn btn-primary">Report an Issue</a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+<div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content bg-light">
+            <div class="modal-body text-center p-0">
+                <img id="modalImage" src="" class="img-fluid zoomable" alt="Zoomed image" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Styling -->
+<style>
+    .issue-card {
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+
+    .issue-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .vote-btn.active {
+        background-color: #0d6efd;
+        color: white;
+        border-color: #0d6efd;
+    }
+
+    .vote-btn:hover:not(:disabled) {
+        transform: scale(1.05);
+        transition: transform 0.2s;
+    }
+
+    .vote-btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    #modalImage {
+        max-height: 85vh;
+        width: 100%;
+        object-fit: contain;
+        transition: transform 0.3s ease-in-out;
+        cursor: zoom-in;
+    }
+
+    #modalImage.zoomed {
+        transform: scale(1.5);
+        cursor: zoom-out;
+    }
+</style>
+{% endblock %} {% block extra_js %}
+<script>
+    // CSRF Helper
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== "") {
+            document.cookie.split(";").forEach((cookie) => {
+                cookie = cookie.trim();
+                if (cookie.startsWith(name + "=")) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                }
+            });
+        }
+        return cookieValue;
+    }
+    const csrftoken = getCookie("csrftoken");
+
+    // Handle vote clicks
+    document.addEventListener("click", function (e) {
+        const btn = e.target.closest(".vote-btn");
+        if (!btn) return;
+
+        e.preventDefault();
+        const issueId = btn.dataset.issueId;
+        if (!issueId) return;
+
+        const originalHTML = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+        fetch("{% url 'vote_issue' 0 %}".replace("0", issueId), {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": csrftoken,
+                "X-Requested-With": "XMLHttpRequest",
+            },
+        })
+            .then((r) => r.json())
+            .then((data) => {
+                if (!data.success) throw new Error(data.error || "Vote failed");
+                btn.classList.toggle("active", data.voted);
+                btn.innerHTML =
+                    '<i class="fas fa-thumbs-up"></i> <span class="vote-count">' +
+                    data.vote_count +
+                    "</span>";
+            })
+            .catch((err) => {
+                console.error(err);
+                alert("Error: " + err.message);
+                btn.innerHTML = originalHTML;
+            })
+            .finally(() => {
+                btn.disabled = false;
+            });
+    });
+
+    // 🔥 Handle image modal
+    const imageModal = document.getElementById("imageModal");
+    const modalImage = document.getElementById("modalImage");
+
+    document.querySelectorAll(".issue-image").forEach((img) => {
+        img.addEventListener("click", function () {
+            const src = this.getAttribute("data-image");
+            modalImage.src = src;
+            modalImage.classList.remove("zoomed");
+        });
+    });
+
+    // Toggle zoom on click inside modal
+    modalImage.addEventListener("click", function () {
+        this.classList.toggle("zoomed");
+    });
+</script>
+{% endblock %}
