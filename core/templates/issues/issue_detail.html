@@ -1,0 +1,69 @@
+{% extends "core/base.html" %}
+{% load humanize %}
+{% block content %}
+<div class="container my-5">
+    <!-- Issue details -->
+    <div class="card shadow-sm mb-4">
+        {% if issue.photo %}
+        <div class="text-center my-3">
+            <img src="{{ issue.photo.url }}" class="img-fluid rounded shadow-sm" style="max-height: 400px; object-fit: contain;"
+                alt="{{ issue.title }}">
+        </div>
+        {% endif %}
+        <div class="card-body">
+            <h3>{{ issue.title }}</h3>
+            <p class="text-muted">{{ issue.description }}</p>
+            <p><i class="fas fa-map-marker-alt"></i> {{ issue.location }}</p>
+            <span class="badge bg-info">{{ issue.get_status_display }}</span>
+        </div>
+    </div>
+
+    <!-- Comments Section -->
+    <div class="card shadow-sm">
+        <div class="card-header">
+            <h5 class="mb-0">Comments</h5>
+        </div>
+        <div class="card-body">
+            {% for comment in comments %}
+            <div class="mb-3">
+                <strong>{{ comment.user.username }}</strong>
+                <small class="text-muted">{{ comment.created_at|naturaltime }}</small>
+                <p>{{ comment.content }}</p>
+
+                <!-- Replies -->
+                <div class="ms-4">
+                    {% for reply in comment.replies.all %}
+                    <div class="mb-2">
+                        <strong>{{ reply.user.username }}</strong>
+                        <small class="text-muted">{{ reply.created_at|naturaltime }}</small>
+                        <p>{{ reply.content }}</p>
+                    </div>
+                    {% endfor %}
+
+                    <!-- Reply form -->
+                    {% if user.is_authenticated %}
+                        <form method="post" action="{% url 'add_comment' issue.id comment.id %}">
+                            {% csrf_token %}
+                            <input type="content" name="content" class="form-control form-control-sm" placeholder="Reply...">
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-muted">No comments yet. Be the first!</p>
+            {% endfor %}
+
+            <!-- New comment form -->
+            {% if user.is_authenticated %}
+            <form method="post" action="{% url 'add_comment' issue.id %}" class="mt-3">
+                {% csrf_token %}
+                <textarea name="content" class="form-control" placeholder="Write a comment..."></textarea>
+                <button type="submit" class="btn btn-primary btn-sm mt-2">Post</button>
+            </form>
+            {% else %}
+            <p><a href="{% url 'login' %}">Login</a> to comment.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
