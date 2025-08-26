@@ -1,0 +1,103 @@
+{% extends "core/base.html" %}
+{% block title %}Register as Citizen{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-body p-5">
+                    <h2 class="card-title text-center mb-4">Create Citizen Account</h2>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        {# Messages block - FIXED SYNTAX #}
+                        {% if messages %}
+                            {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                            {% endfor %}
+                        {% endif %}
+                        
+                        {# Form errors block - FIXED SYNTAX #}
+                        {% if form.errors %}
+                        <div class="alert alert-danger">
+                            <strong>Error!</strong> Please correct the following:
+                            <ul>
+                                {% for field, errors in form.errors.items %}
+                                    {% for error in errors %}
+                                        <li>{{ error }}</li>
+                                    {% endfor %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        {% endif %}
+
+                        <div class="mb-3">
+                            <label for="id_username" class="form-label">Username</label>
+                            {{ form.username }}
+                            <small class="text-muted">Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_email" class="form-label">Email</label>
+                            {{ form.email }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_phone" class="form-label">Phone (Optional)</label>
+                            {{ form.phone }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_password1" class="form-label">Password</label>
+                            {{ form.password1 }}
+                            <small class="text-muted">
+                                <ul>
+                                    <li>Your password can't be too similar to your other personal information.</li>
+                                    <li>Your password must contain at least 8 characters.</li>
+                                    <li>Your password can't be a commonly used password.</li>
+                                    <li>Your password can't be entirely numeric.</li>
+                                </ul>
+                            </small>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="id_password2" class="form-label">Password Confirmation</label>
+                            {{ form.password2 }}
+                            <small class="text-muted">Enter the same password as before, for verification.</small>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">Register</button>
+                        </div>
+                    </form>
+
+                    <hr class="my-4">
+
+                    <p class="text-center text-muted">
+                        Already have an account? <a href="{% url 'login' %}" class="text-decoration-none">Login here</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function () {
+        // Add Bootstrap classes to all input fields
+        $('input:not([type="checkbox"]):not([type="radio"])').addClass('form-control');
+        $('input[type="checkbox"]').removeClass('form-control').addClass('form-check-input');
+        $('input[type="radio"]').removeClass('form-control').addClass('form-check-input');
+        
+        // Add Bootstrap classes to select fields
+        $('select').addClass('form-select');
+    });
+</script>
+{% endblock %}
