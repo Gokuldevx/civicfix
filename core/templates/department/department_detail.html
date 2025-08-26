@@ -1,0 +1,78 @@
+{% extends "core/base.html" %}
+{% block content %}
+<div class="container my-5">
+    <div class="card shadow-lg">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h3>{{ department.name }} Department</h3>
+            <a href="{% url 'manage_departments' %}" class="btn btn-light btn-sm">Back</a>
+        </div>
+        <div class="card-body">
+
+            <!-- Department Users -->
+            <h5>Department Users</h5>
+            {% if users %}
+                <ul class="list-group mb-3">
+                    {% for user in users %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>
+                                <strong>{{ user.username }}</strong> — {{ user.email }}
+                                {% if department.admin and department.admin.id == user.id %}
+                                    <span class="badge bg-success ms-2">Admin</span>
+                                {% endif %}
+                            </span>
+
+                            <!-- Assign as Admin button -->
+                            {% if not department.admin or department.admin.id != user.id %}
+                                <form method="post">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="assign_admin" value="1">
+                                    <input type="hidden" name="admin_user_id" value="{{ user.id }}">
+                                    <button type="submit" class="btn btn-sm btn-outline-primary">
+                                        Make Admin
+                                    </button>
+                                </form>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-muted">No users registered in this department yet.</p>
+            {% endif %}
+
+            <!-- Remove Admin -->
+            {% if department.admin %}
+                <form method="post" class="mt-2">
+                    {% csrf_token %}
+                    <input type="hidden" name="remove_admin" value="1">
+                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                        Remove Admin
+                    </button>
+                </form>
+            {% endif %}
+
+            <hr>
+
+            <!-- Register New User -->
+            <h5>Register New User for {{ department.name }}</h5>
+            <form method="post" class="row g-2">
+                {% csrf_token %}
+                <input type="hidden" name="create_user" value="1">
+                <div class="col-md-3">
+                    <input type="text" name="username" class="form-control" placeholder="Username" required>
+                </div>
+                <div class="col-md-3">
+                    <input type="email" name="email" class="form-control" placeholder="Email">
+                </div>
+                <div class="col-md-3">
+                    <input type="password" name="password" class="form-control" placeholder="Password" required>
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-primary w-100">Create User</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
+  
