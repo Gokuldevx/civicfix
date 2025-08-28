@@ -76,7 +76,7 @@ def report_issue(request):
 
 @login_required
 def view_all_issues(request):
-    if not request.user.is_citizen:
+    if not request.user.is_active:
         messages.error(request, 'Access denied. Citizen role required.')
         return redirect('home')
 
