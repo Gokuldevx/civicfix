@@ -24,16 +24,18 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles',
-
-    # Third-party
     'cloudinary',
     'cloudinary_storage',
+    'django.contrib.staticfiles',
     'whitenoise.runserver_nostatic',
-
-    # Local apps
     'core.apps.CoreConfig',
 ]
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': os.getenv('CLOUD_NAME'),
+    'API_KEY': os.getenv('API_KEY'),
+    'API_SECRET': os.getenv('API_SECRET'),
+}
 
 AUTH_USER_MODEL = 'core.User'
 
@@ -94,6 +96,7 @@ USE_TZ = True
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
 
 cloudinary.config( 
     cloud_name=os.getenv("CLOUD_NAME"),
