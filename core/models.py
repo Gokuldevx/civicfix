@@ -1,3 +1,4 @@
+from cloudinary.models import CloudinaryField
 from datetime import timedelta
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import FileExtensionValidator
@@ -116,11 +117,10 @@ class Issue(models.Model):
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
 
-    photo = models.ImageField(
-        upload_to="issue_photos/",
+    photo = CloudinaryField(
+        'images',
         blank=True,
         null=True,
-        validators=[FileExtensionValidator(['jpg', 'jpeg', 'png', 'gif'])]
     )
 
     status = models.CharField(
