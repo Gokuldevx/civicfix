@@ -93,15 +93,22 @@ USE_TZ = True
 # Static & Media files
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage" 
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
+# Media (Cloudinary + fallback local)
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"   # Used locally if Cloudinary creds not set
 
 cloudinary.config( 
-  cloud_name = os.getenv("CLOUD_NAME"),
-  api_key = os.getenv("API_KEY"),
-  api_secret = os.getenv("API_SECRET")
+    cloud_name=os.getenv("CLOUD_NAME"),
+    api_key=os.getenv("API_KEY"),
+    api_secret=os.getenv("API_SECRET"),
+    secure=True
 )
 
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+# Default storage (Cloudinary)
+DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
+
 
 # Auth redirects
 LOGIN_REDIRECT_URL = 'citizen_dashboard'
