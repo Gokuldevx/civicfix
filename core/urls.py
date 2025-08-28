@@ -26,4 +26,5 @@ urlpatterns = [
     path('unban-user/<int:user_id>/', views.unban_user, name='unban_user'),
     path('issues/<int:issue_id>/delete_fake/', views.delete_fake_issue, name='delete_fake_issue'),
     path("reports/", views.superadmin_reports, name="superadmin_reports"),
+    path('delete-issue/<int:issue_id>/', views.delete_issue, name='delete_issue'),
 ]
