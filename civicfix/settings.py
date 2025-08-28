@@ -101,7 +101,6 @@ cloudinary.config(
   api_secret = os.getenv("API_SECRET")
 )
 
-MEDIA_URL = f"https://res.cloudinary.com/{os.getenv('CLOUD_NAME')}/"
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 # Auth redirects
